@@ -53,3 +53,13 @@ When I graphed it, I could clearly see the data points scatter above and below t
 ### What the seed does
 
 The seed controls the random numbers in the `tensor_1d` variable. When you use the same seed, you get the same random numbers on every run, so the figure is identical and the results are reproducible. Changing the seed changes those random numbers, so the data points move. The x values and the true line don't change, because I created them myself, not randomly.
+
+
+## Distributions
+
+![Distributions](figures/distributions.png)
+
+10,000 samples each from a Normal, Uniform, and Exponential distribution. The red line is my own PDF written in NumPy, and the dashed line is PyTorch's density (exp of log_prob). 
+
+### What density=True does
+Without it, each bar's height is a raw count. density=True divides each count by (total samples × bin width), so the total area of all the bars is 1. 
