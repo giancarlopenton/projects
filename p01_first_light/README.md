@@ -63,3 +63,13 @@ The seed controls the random numbers in the `tensor_1d` variable. When you use t
 
 ### What density=True does
 Without it, each bar's height is a raw count. density=True divides each count by (total samples × bin width), so the total area of all the bars is 1. 
+
+## Heatmap
+
+![Heatmap](figures/heatmap.png)
+
+I built a 2D grid from 200 x values and 100 y values, both from -2π to 2π, and computed z = sin(x) * cos(y) at every point. Each spot on the heatmap is one (x, y) pair, and its color is the z value there: yellow is +1, purple is -1, green is about 0. I built the same grid in NumPy and in PyTorch and checked that both z arrays match with allclose.
+
+### "xy" vs. "ij" indexing
+
+NumPy's meshgrid defaults to "xy" indexing, y goes on the rows and x goes on the columns. PyTorch's meshgrid defaults to "ij" indexing, the first input goes on the rows and the second goes on the columns. With the same call, `meshgrid(x, y)`, NumPy gave a shape of (100, 200) and PyTorch gave (200, 100). The two grids were transposes of each other, so I switched PyTorch to `indexing='xy'` to make it match NumPy.

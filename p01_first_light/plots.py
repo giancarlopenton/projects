@@ -15,6 +15,8 @@ def main():
   memory_test()
   noise_data()
   distributions_plot()
+  z_num, z_torch = compute_heatmap()
+  heatmap_plot(z_num, z_torch)
 
 def trig_plot():
 
@@ -148,7 +150,35 @@ def distributions_plot():
 
   fig.tight_layout()
   fig.savefig(create_path_png('distributions'))
-  
+
+
+def heatmap_plot(z_num, z_torch):
+
+  print(f'heatmap | allclose: {np.allclose(z_num, z_torch.numpy())}')
+
+  fig, ax = plt.subplots(figsize=(7, 5))
+  image = ax.imshow(z_num, cmap='viridis', extent=[-2 * np.pi, 2 * np.pi, -2 * np.pi, 2 * np.pi], origin='lower')
+  ax.set_title('z = sin(x) * cos(y)')
+  ax.set_xlabel('x')
+  ax.set_ylabel('y')
+  fig.colorbar(image, label='z')
+
+  fig.savefig(create_path_png('heatmap'))
+
+def compute_heatmap():
+  x_num = np.linspace((-2 * (np.pi)), (2 * (np.pi)), 200)
+  y_num = np.linspace((-2 * (np.pi)), (2 * (np.pi)), 100)
+  X_num, Y_num = np.meshgrid(x_num, y_num)
+  z_num = np.sin(X_num) * np.cos(Y_num)
+
+  x_torch = torch.linspace((-2 * (np.pi)), (2 * (np.pi)), 200, dtype=torch.float64)
+  y_torch = torch.linspace((-2 * (np.pi)), (2 * (np.pi)), 100, dtype=torch.float64)
+  X_torch, Y_torch = torch.meshgrid(x_torch, y_torch, indexing='xy')
+  z_torch = torch.sin(X_torch) * torch.cos(Y_torch)
+
+
+  return z_num, z_torch
+ 
 
 def create_path_png(name):  
   script_dir = Path(__file__).resolve().parent
