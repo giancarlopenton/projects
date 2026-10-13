@@ -1,5 +1,10 @@
 # First Light Project
 
+## Trig Plot
+
+![Trig plot](figures/trig.png)
+
+I created a NumPy array of 1,000 evenly spaced points from -2π to 2π, then computed sin(x), cos(x), and their product, sin(x) * cos(x). Each one is a single vectorized operation on the whole array, with no loops. The plot shows all three curves with different line styles and a line at y = 0.
 
 ## NumPy vs. PyTorch Precision
 

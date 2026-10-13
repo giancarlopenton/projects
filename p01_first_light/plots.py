@@ -35,7 +35,7 @@ def trig_plot():
   ax.set_ylabel('f(x)')
   ax.legend()
 
-  fig.savefig(create_path_png('trig'))
+  fig.savefig(create_path_png('trig'), dpi=150, bbox_inches='tight')
 
 
 def dtype_comparison():
@@ -71,7 +71,7 @@ def precision_plot():
   ax.legend(loc='lower left')
 
 
-  fig.savefig(create_path_png('precision'))
+  fig.savefig(create_path_png('precision'), dpi=150, bbox_inches='tight')
 
 def compute_error():
   x_array32 = np.linspace((-2 * (np.pi)), (2 * (np.pi)), 1000, dtype=np.float32)
@@ -107,7 +107,7 @@ def noise_data():
   ax.plot(x, y_true, label='true line (y= 2x + 1)', color='red')
   ax.legend()
 
-  fig.savefig(create_path_png('noise_data'))
+  fig.savefig(create_path_png('noise_data'), dpi=150, bbox_inches='tight')
 
 def normal_pdf(x, mu, sigma):
   return (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
@@ -149,7 +149,7 @@ def distributions_plot():
     print(f'{title} | allclose: {np.allclose(mine, pytorch)}')
 
   fig.tight_layout()
-  fig.savefig(create_path_png('distributions'))
+  fig.savefig(create_path_png('distributions'), dpi=150, bbox_inches='tight')
 
 
 def heatmap_plot(z_num, z_torch):
@@ -163,7 +163,7 @@ def heatmap_plot(z_num, z_torch):
   ax.set_ylabel('y')
   fig.colorbar(image, label='z')
 
-  fig.savefig(create_path_png('heatmap'))
+  fig.savefig(create_path_png('heatmap'), dpi=150, bbox_inches='tight')
 
 def compute_heatmap():
   x_num = np.linspace((-2 * (np.pi)), (2 * (np.pi)), 200)
