@@ -14,6 +14,9 @@ def main():
   precision_plot()
   memory_test()
   noise_data()
+  distributions_plot()
+  z_num, z_torch = compute_heatmap()
+  heatmap_plot(z_num, z_torch)
 
 def trig_plot():
 
@@ -32,7 +35,7 @@ def trig_plot():
   ax.set_ylabel('f(x)')
   ax.legend()
 
-  fig.savefig(create_path_png('trig'))
+  fig.savefig(create_path_png('trig'), dpi=150, bbox_inches='tight')
 
 
 def dtype_comparison():
@@ -68,7 +71,7 @@ def precision_plot():
   ax.legend(loc='lower left')
 
 
-  fig.savefig(create_path_png('precision'))
+  fig.savefig(create_path_png('precision'), dpi=150, bbox_inches='tight')
 
 def compute_error():
   x_array32 = np.linspace((-2 * (np.pi)), (2 * (np.pi)), 1000, dtype=np.float32)
@@ -89,8 +92,6 @@ def memory_test():
   print(f'from_numpy | before: {before}| after changing array: {shared_memory[0]}')
   print(f'torch.tensor | before: {before} | after changing array: {independent_memory[0]}')
   
-
-
 def noise_data():
   x = torch.linspace(0, 10, 200)
   tensor_1d = torch.randn(200)
@@ -106,7 +107,78 @@ def noise_data():
   ax.plot(x, y_true, label='true line (y= 2x + 1)', color='red')
   ax.legend()
 
-  fig.savefig(create_path_png('noise_data'))
+  fig.savefig(create_path_png('noise_data'), dpi=150, bbox_inches='tight')
+
+def normal_pdf(x, mu, sigma):
+  return (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
+
+def uniform_pdf(x, a, b):
+  return np.where((x >= a) & (x <= b), 1 / (b - a), 0)
+
+def exponential_pdf(x, lam):
+  return np.where(x >= 0, lam * np.exp(-lam * x), 0)
+
+def torch_density(dist, x):
+  return torch.exp(dist.log_prob(torch.from_numpy(x))).numpy()
+
+def distributions_plot():
+  normal_dist = torch.distributions.Normal(loc=0.0, scale=1.0)
+  uniform_dist = torch.distributions.Uniform(low=0.0, high=2.0, validate_args=False)
+  exp_dist = torch.distributions.Exponential(rate=1.0, validate_args=False)
+
+  x_normal = np.linspace(-4, 4, 300)
+  x_uniform = np.linspace(-0.5, 2.5, 300)
+  x_exp = np.linspace(-0.5, 6, 300)
+
+  panels = [
+    (normal_dist, x_normal, normal_pdf(x_normal, 0, 1), torch_density(normal_dist, x_normal), 'Normal (μ=0, σ=1)'),
+    (uniform_dist, x_uniform, uniform_pdf(x_uniform, 0, 2), torch_density(uniform_dist, x_uniform), 'Uniform (a=0, b=2)'),
+    (exp_dist, x_exp, exponential_pdf(x_exp, 1), np.where(x_exp >= 0, torch_density(exp_dist, x_exp), 0), 'Exponential (λ=1)'),
+  ]
+
+  fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+  for ax, (dist, x, mine, pytorch, title) in zip(axes, panels):
+    samples = dist.sample((10000,))
+    ax.hist(samples, bins=50, edgecolor='black', density=True, alpha=0.6)
+    ax.plot(x, mine, color='red', label='My PDF')
+    ax.plot(x, pytorch, color='black', linestyle='dashed', label='PyTorch exp(log_prob)')
+    ax.set_title(title)
+    ax.set_xlabel('x')
+    ax.set_ylabel('Density')
+    ax.legend()
+    print(f'{title} | allclose: {np.allclose(mine, pytorch)}')
+
+  fig.tight_layout()
+  fig.savefig(create_path_png('distributions'), dpi=150, bbox_inches='tight')
+
+
+def heatmap_plot(z_num, z_torch):
+
+  print(f'heatmap | allclose: {np.allclose(z_num, z_torch.numpy())}')
+
+  fig, ax = plt.subplots(figsize=(7, 5))
+  image = ax.imshow(z_num, cmap='viridis', extent=[-2 * np.pi, 2 * np.pi, -2 * np.pi, 2 * np.pi], origin='lower')
+  ax.set_title('z = sin(x) * cos(y)')
+  ax.set_xlabel('x')
+  ax.set_ylabel('y')
+  fig.colorbar(image, label='z')
+
+  fig.savefig(create_path_png('heatmap'), dpi=150, bbox_inches='tight')
+
+def compute_heatmap():
+  x_num = np.linspace((-2 * (np.pi)), (2 * (np.pi)), 200)
+  y_num = np.linspace((-2 * (np.pi)), (2 * (np.pi)), 100)
+  X_num, Y_num = np.meshgrid(x_num, y_num)
+  z_num = np.sin(X_num) * np.cos(Y_num)
+
+  x_torch = torch.linspace((-2 * (np.pi)), (2 * (np.pi)), 200, dtype=torch.float64)
+  y_torch = torch.linspace((-2 * (np.pi)), (2 * (np.pi)), 100, dtype=torch.float64)
+  X_torch, Y_torch = torch.meshgrid(x_torch, y_torch, indexing='xy')
+  z_torch = torch.sin(X_torch) * torch.cos(Y_torch)
+
+
+  return z_num, z_torch
+ 
 
 def create_path_png(name):  
   script_dir = Path(__file__).resolve().parent

@@ -1,5 +1,12 @@
 # First Light Project
 
+This project builds familiarity with the core tools I'll use in Machine Learning such as arrays and tensors, precision, memory, randomness, probability distributions, and plotting.
+
+## Trig Plot
+
+![Trig plot](figures/trig.png)
+
+I created a NumPy array of 1,000 evenly spaced points from -2π to 2π, then computed sin(x), cos(x), and their product, sin(x) * cos(x). Each one is a single vectorized operation on the whole array, with no loops. The plot shows all three curves with different line styles and a line at y = 0.
 
 ## NumPy vs. PyTorch Precision
 
@@ -53,3 +60,34 @@ When I graphed it, I could clearly see the data points scatter above and below t
 ### What the seed does
 
 The seed controls the random numbers in the `tensor_1d` variable. When you use the same seed, you get the same random numbers on every run, so the figure is identical and the results are reproducible. Changing the seed changes those random numbers, so the data points move. The x values and the true line don't change, because I created them myself, not randomly.
+
+
+## Distributions
+
+![Distributions](figures/distributions.png)
+
+10,000 samples each from a Normal, Uniform, and Exponential distribution. The red line is my own PDF written in NumPy, and the dashed line is PyTorch's density (exp of log_prob). 
+
+### What density=True does
+Without it, each bar's height is a raw count. density=True divides each count by (total samples × bin width), so the total area of all the bars is 1. 
+
+## Heatmap
+
+![Heatmap](figures/heatmap.png)
+
+I built a 2D grid from 200 x values and 100 y values, both from -2π to 2π, and computed z = sin(x) * cos(y) at every point. Each spot on the heatmap is one (x, y) pair, and its color is the z value there: yellow is +1, purple is -1, green is about 0. I built the same grid in NumPy and in PyTorch and checked that both z arrays match with allclose.
+
+### "xy" vs. "ij" indexing
+
+NumPy's meshgrid defaults to "xy" indexing, y goes on the rows and x goes on the columns. PyTorch's meshgrid defaults to "ij" indexing, the first input goes on the rows and the second goes on the columns. With the same call, `meshgrid(x, y)`, NumPy gave a shape of (100, 200) and PyTorch gave (200, 100). The two grids were transposes of each other, so I switched PyTorch to `indexing='xy'` to make it match NumPy.
+
+## How to reproduce
+
+From the repo root (see the root README for setup, including the pip option):
+
+```sh
+uv sync
+uv run python p01_first_light/plots.py
+```
+
+This regenerates all five figures in `p01_first_light/figures/`.
