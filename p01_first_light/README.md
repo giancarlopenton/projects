@@ -1,5 +1,7 @@
 # First Light Project
 
+This project builds familiarity with the core tools I'll use in Machine Learning such as arrays and tensors, precision, memory, randomness, probability distributions, and plotting.
+
 ## Trig Plot
 
 ![Trig plot](figures/trig.png)
@@ -78,3 +80,14 @@ I built a 2D grid from 200 x values and 100 y values, both from -2π to 2π, and
 ### "xy" vs. "ij" indexing
 
 NumPy's meshgrid defaults to "xy" indexing, y goes on the rows and x goes on the columns. PyTorch's meshgrid defaults to "ij" indexing, the first input goes on the rows and the second goes on the columns. With the same call, `meshgrid(x, y)`, NumPy gave a shape of (100, 200) and PyTorch gave (200, 100). The two grids were transposes of each other, so I switched PyTorch to `indexing='xy'` to make it match NumPy.
+
+## How to reproduce
+
+From the repo root (see the root README for setup, including the pip option):
+
+```sh
+uv sync
+uv run python p01_first_light/plots.py
+```
+
+This regenerates all five figures in `p01_first_light/figures/`.
